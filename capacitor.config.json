@@ -1,0 +1,7 @@
+{
+  "appId": "com.n5a.app",
+  "appName": "2n5a",
+  "webDir": "dist",
+  "backgroundColor": "#09070b",
+  "android": { "allowMixedContent": false }
+}

@@ -1,0 +1,32 @@
+name: Build APK
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm install
+      - run: npm run build
+      - name: Add Android platform
+        run: |
+          if [ ! -d android ]; then npx cap add android; fi
+          npx cap sync android
+      - name: Dark window background
+        run: |
+          f=android/app/src/main/res/values/styles.xml
+          sed -i 's|<item name="android:background">@null</item>|<item name="android:background">#09070b</item><item name="android:statusBarColor">#09070b</item><item name="android:navigationBarColor">#09070b</item>|' $f || true
+      - run: chmod +x android/gradlew
+      - run: cd android && ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 2n5a-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
